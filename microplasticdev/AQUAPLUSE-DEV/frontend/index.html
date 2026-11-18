@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>AquaPulse — Environmental Intelligence</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/visualization.css">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-mark"><span></span><i></i></div>
+        <div><strong>AQUAPULSE</strong><small>Environmental Intelligence</small></div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-page="dashboard"><span class="nav-icon">▦</span><span>Dashboard</span></button>
+        <button class="nav-item" data-page="studio"><span class="nav-icon">⌁</span><span>Visualization Studio</span></button>
+        <button class="nav-item" data-page="analytics"><span class="nav-icon">⌇</span><span>Sensor Analytics</span></button>
+        <button class="nav-item" data-page="monitoring"><span class="nav-icon">◉</span><span>Live Monitoring</span></button>
+        <button class="nav-item" data-page="gps"><span class="nav-icon">⌖</span><span>GPS Monitoring</span></button>
+        <button class="nav-item" data-page="datasets"><span class="nav-icon">▤</span><span>Dataset Manager</span></button>
+        <button class="nav-item" data-page="reports"><span class="nav-icon">▱</span><span>Reports</span></button>
+      </nav>
+      <div class="sidebar-bottom">
+        <button class="nav-item" data-page="settings"><span class="nav-icon">⚙</span><span>Settings</span></button>
+        <div class="operator"><div class="avatar">DK</div><div><strong>Deepak K.</strong><small>Research Operator</small></div><span>•••</span></div>
+      </div>
+    </aside>
+    <main class="main">
+      <header class="topbar">
+        <button class="menu-toggle" id="menuToggle">☰</button>
+        <div class="breadcrumb"><span>Workspace</span><b>/</b><strong id="pageTitle">Dashboard</strong></div>
+        <div class="top-actions">
+          <button class="icon-button" title="Notifications">♢<i></i></button>
+          <div class="live-status"><span></span>System Online</div>
+        </div>
+      </header>
+
+      <section class="page active" id="dashboard">
+        <div class="page-heading"><div><p class="eyebrow">ENVIRONMENTAL OVERVIEW</p><h1>Monitoring Dashboard</h1></div><div class="heading-actions"><select id="dashboardDevice"><option value="">All devices</option></select><button class="secondary-button" id="refreshDashboard">↻ Refresh</button></div></div>
+        <div class="kpi-grid" id="kpiGrid"></div>
+        <div class="dashboard-grid">
+          <article class="panel large"><div class="panel-header"><div><p>SENSOR TELEMETRY</p><h3>Sensor readings over time</h3></div><div class="legend"><span><i class="violet"></i>Piezoelectric</span><span><i class="lavender"></i>Ultrasonic</span></div></div><div id="telemetryChart" class="chart"></div></article>
+          <article class="panel"><div class="panel-header"><div><p>CLASSIFICATION</p><h3>Observation distribution</h3></div></div><div id="classificationChart" class="chart"></div></article>
+          <article class="panel"><div class="panel-header"><div><p>SIGNAL HEALTH</p><h3>Signal energy</h3></div></div><div id="energyChart" class="chart"></div></article>
+          <article class="panel wide"><div class="panel-header"><div><p>ACTIVITY</p><h3>Daily observation frequency</h3></div></div><div id="dailyChart" class="chart"></div></article>
+        </div>
+      </section>
+
+      <section class="page" id="studio">
+        <div class="page-heading"><div><p class="eyebrow">DATA EXPLORATION</p><h1>Visualization Studio</h1></div><div class="heading-actions"><button class="secondary-button" id="resetChart">Reset</button><button class="primary-button" id="generateChart">Generate Chart</button></div></div>
+        <div class="studio-layout">
+          <aside class="studio-controls">
+            <label>Dataset<select id="vizDataset"></select></label>
+            <label>Chart type<select id="vizType"></select></label>
+            <div class="field-grid"><label>X-axis<select id="vizX"></select></label><label>Y-axis<select id="vizY"></select></label></div>
+            <label>Color / grouping<select id="vizColor"><option value="">None</option></select></label>
+            <label>Chart title<input id="vizTitle" value="Sensor performance analysis"></label>
+            <div class="field-grid"><label>Line width<input id="lineWidth" type="number" value="2" min="1" max="8"></label><label>Marker size<input id="markerSize" type="number" value="6" min="2" max="20"></label></div>
+            <button class="secondary-button full" id="saveChart">＋ Save visualization</button>
+          </aside>
+          <div class="chart-workspace"><div class="workspace-toolbar"><span id="chartStatus">Ready to visualize</span><div><button class="icon-button" id="downloadPNG" title="Download PNG">↓</button><button class="icon-button" id="downloadCSV" title="Download data">CSV</button></div></div><div id="mainChart" class="main-chart"></div></div>
+        </div>
+        <div class="saved-section"><div class="section-title"><h3>Saved Visualizations</h3><span id="savedCount">0 saved</span></div><div id="savedCharts" class="saved-grid"></div></div>
+      </section>
+
+      <section class="page" id="analytics">
+        <div class="page-heading"><div><p class="eyebrow">SCIENTIFIC ANALYSIS</p><h1>Sensor Analytics</h1></div></div>
+        <div class="analytics-layout">
+          <aside class="studio-controls"><label>Analysis field<select id="analyticsField"></select></label><label>Method<select id="analyticsMethod"><option value="IQR">IQR outlier detection</option><option>Z-score>Z-score</option><option>Isolation Forest>Isolation Forest</option></select></label><button class="primary-button full" id="runAnalytics">Run Analysis</button></aside>
+          <div class="analytics-results"><div class="kpi-grid" id="analyticsKpis"></div><article class="panel"><div class="panel-header"><div><p>SIGNAL DISTRIBUTION</p><h3>Field statistics</h3></div></div><div id="analyticsChart" class="chart tall"></div></article></div>
+        </div>
+      </section>
+
+      <section class="page" id="monitoring">
+        <div class="page-heading"><div><p class="eyebrow">REAL-TIME SIGNALS</p><h1>Live Monitoring</h1></div><div class="live-status"><span></span>Streaming sample telemetry</div></div>
+        <div class="dashboard-grid"><article class="panel large"><div class="panel-header"><h3>Raw acoustic signal</h3></div><div id="liveSignal" class="chart tall"></div></article><article class="panel"><div class="panel-header"><h3>Device status</h3></div><div id="deviceStatus" class="status-list"></div></article></div>
+      </section>
+
+      <section class="page" id="gps">
+        <div class="page-heading"><div><p class="eyebrow">GEOSPATIAL INTELLIGENCE</p><h1>GPS Monitoring</h1></div><div class="heading-actions"><select id="gpsDevice"><option value="">All devices</option></select><select id="gpsClass"><option value="">All classifications</option></select></div></div>
+        <article class="panel map-panel"><div id="gpsMap"></div></article>
+      </section>
+
+      <section class="page" id="datasets">
+        <div class="page-heading"><div><p class="eyebrow">DATA OPERATIONS</p><h1>Dataset Manager</h1></div><label class="primary-button upload-button">＋ Upload CSV<input type="file" id="csvUpload" accept=".csv"></label></div>
+        <div class="dataset-layout"><div class="dataset-list" id="datasetList"></div><article class="panel dataset-preview"><div class="panel-header"><div><p>ACTIVE DATASET</p><h3 id="datasetName">aquapulse_sample_dataset.csv</h3></div><span id="datasetMeta"></span></div><div class="table-wrap"><table><thead id="previewHead"></thead><tbody id="previewBody"></tbody></table></div></article></div>
+      </section>
+
+      <section class="page" id="reports">
+        <div class="page-heading"><div><p class="eyebrow">DOCUMENTATION</p><h1>Reports</h1></div><button class="primary-button" id="generateReport">Generate report</button></div>
+        <div class="report-grid"><article class="panel"><div class="report-icon">▤</div><h3>Statistical summary</h3><p>Descriptive statistics, distributions and field-level observations.</p><button class="secondary-button report-action" data-report="statistics">Generate CSV</button></article><article class="panel"><div class="report-icon">⌁</div><h3>Sensor analysis</h3><p>Piezoelectric and ultrasonic performance summary across devices.</p><button class="secondary-button report-action" data-report="sensor">Generate CSV</button></article><article class="panel"><div class="report-icon">◉</div><h3>Classification report</h3><p>Experimental label distribution and further-analysis findings.</p><button class="secondary-button report-action" data-report="classification">Generate CSV</button></article></div>
+      </section>
+
+      <section class="page" id="settings">
+        <div class="page-heading"><div><p class="eyebrow">SYSTEM CONFIGURATION</p><h1>Settings</h1></div></div>
+        <article class="panel settings-panel"><h3>Appearance</h3><label class="setting-row"><div><strong>Dark interface</strong><small>Official AquaPulse black and violet theme</small></div><input type="checkbox" checked disabled></label><h3>Data preferences</h3><label class="setting-row"><div><strong>Chart row limit</strong><small>Maximum rows rendered in interactive charts</small></div><select><option>1,000 rows</option><option>5,000 rows</option><option>10,000 rows</option></select></label></article>
+      </section>
+    </main>
+  </div>
+  <div class="toast" id="toast"></div>
+  <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
